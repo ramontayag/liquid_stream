@@ -8,8 +8,8 @@ Gem::Specification.new do |spec|
   spec.version       = LiquidStream::VERSION
   spec.authors       = ["Ramon Tayag"]
   spec.email         = ["ramon.tayag@gmail.com"]
-  spec.description   = %q{TODO: Write a gem description}
-  spec.summary       = %q{TODO: Write a gem summary}
+  spec.description   = %q{Allows chaining of context aware Liquid drops}
+  spec.summary       = %q{Allow a more Ruby-like interface to Liquid drops with context awareness}
   spec.homepage      = ""
   spec.license       = "MIT"
 
