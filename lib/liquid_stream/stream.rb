@@ -22,7 +22,7 @@ module LiquidStream
         if method_result.respond_to?(:each)
           # BuildsStreamClassName
           streams_class_name = Utils.
-            streams_class_name_from(options[:with] || method_name)
+            streams_class_name_from(options[:as] || method_name)
 
           # FailsIfStreamNotDefined
           unless Object.const_defined?(streams_class_name)
@@ -36,7 +36,7 @@ module LiquidStream
           streams_class.new(method_result, stream_context)
         else
           stream_class_name = Utils.
-            stream_class_name_from(options[:with] || method_name)
+            stream_class_name_from(options[:as] || method_name)
 
           if Object.const_defined?(stream_class_name)
             stream_class = stream_class_name.constantize

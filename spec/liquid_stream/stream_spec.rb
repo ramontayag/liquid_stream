@@ -76,7 +76,7 @@ describe LiquidStream::Stream do
         it 'should instantiate the object in the stream class' do
           blog = Blog.new(title: 'Blog')
           post = Post.new(title: 'Post', blog: blog)
-          PostStream.stream(:blog, with: 'PostStream')
+          PostStream.stream(:blog, as: 'PostStream')
           stream = PostStream.new(post)
           expect(stream.blog).to be_kind_of(PostStream)
           expect(stream.blog.title).to eq('Blog')
@@ -96,7 +96,7 @@ describe LiquidStream::Stream do
       it 'should use the given stream class' do
         comment = Comment.new(body: 'Hi')
         post = Post.new(title: 'Post', comments: [comment])
-        PostStream.stream(:comments, with: 'BlogsStream')
+        PostStream.stream(:comments, as: 'BlogsStream')
         post_stream = PostStream.new(post)
         expect(post_stream.comments.first).to be_kind_of(BlogStream)
       end

@@ -1,5 +1,5 @@
 class PostsStream < LiquidStream::Streams
 
-  stream :popular, with: 'PostsStream'
+  stream :popular, as: 'PostsStream'
 
 end
