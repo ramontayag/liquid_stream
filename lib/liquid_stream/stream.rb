@@ -21,27 +21,24 @@ module LiquidStream
 
         if method_result.respond_to?(:each)
           # BuildsStreamClassName
-          stream_class_name = if options.has_key?(:with)
+          streams_class_name = if options.has_key?(:with)
                                 options[:with]
                               else
-                                Utils.stream_class_name_from(method_name)
+                                Utils.streams_class_name_from(method_name)
                               end
 
           # FailsIfStreamNotDefined
-          unless Object.const_defined?(stream_class_name)
-            fail StreamNotDefined, "`#{stream_class_name}` is not defined"
+          unless Object.const_defined?(streams_class_name)
+            fail StreamNotDefined, "`#{streams_class_name}` is not defined"
           end
 
-          Streams.new(method_result,
-                      method: options[:with] || method_name)
-          # # BuildsStreamClass
-          # stream_class = stream_class_name.constantize
+          # BuildsStreamClass
+          streams_class = streams_class_name.constantize
 
-          # # CreatesStreams
-          # method_result.map do |resource|
-          #   # TODO should pass context
-          #   stream_class.new(resource)
-          # end
+          # CreatesStreams
+          # TODO should pass context
+          streams_class.new(method_result,
+                            method: options[:with] || method_name)
         else
           method_result
         end

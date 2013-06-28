@@ -31,4 +31,13 @@ describe LiquidStream::Utils do
     end
   end
 
+  describe '.streams_class_name_from' do
+    it 'should return the pluralized best guess class name from the arg' do
+      expect(described_class.streams_class_name_from(:post)).
+        to eq('PostsStream')
+      expect(described_class.streams_class_name_from('BlogStream')).
+        to eq('BlogsStream')
+    end
+  end
+
 end

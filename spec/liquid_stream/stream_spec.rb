@@ -25,7 +25,7 @@ describe LiquidStream::Stream do
           post_stream = PostStream.new(post)
           expect {post_stream.comments}.
             to raise_error(LiquidStream::StreamNotDefined,
-                           "`CommentStream` is not defined")
+                           "`CommentsStream` is not defined")
         end
       end
 
@@ -60,7 +60,7 @@ describe LiquidStream::Stream do
       it 'should use the given stream class' do
         comment = Comment.new(body: 'Hi')
         post = Post.new(title: 'Post', comments: [comment])
-        PostStream.stream(:comments, with: 'BlogStream')
+        PostStream.stream(:comments, with: 'BlogsStream')
         post_stream = PostStream.new(post)
         expect(post_stream.comments.first).to be_kind_of(BlogStream)
       end
