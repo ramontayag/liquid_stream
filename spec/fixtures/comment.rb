@@ -1,0 +1,3 @@
+class Comment < Base
+
+end
