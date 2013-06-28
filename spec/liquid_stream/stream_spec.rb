@@ -44,7 +44,14 @@ describe LiquidStream::Stream do
 
     context 'streams to a non enumerable' do
       context 'a stream class exists for the object' do
-        it 'should return the object instantiated in the stream'
+        it 'should return the object instantiated in the stream' do
+          blog = Blog.new(title: 'Blog')
+          post = Post.new(title: 'Post', blog: blog)
+          PostStream.stream(:blog)
+          stream = PostStream.new(post)
+          expect(stream.blog).to be_kind_of(BlogStream)
+          expect(stream.blog.title).to eq('Blog')
+        end
       end
 
       context 'no stream class exists for the object' do
