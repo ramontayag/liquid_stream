@@ -72,6 +72,17 @@ describe LiquidStream::Stream do
         expect(stream.blog.stream_context).to eq(controller: controller)
       end
 
+      context 'given a specific stream class to use' do
+        it 'should instantiate the object in the stream class' do
+          blog = Blog.new(title: 'Blog')
+          post = Post.new(title: 'Post', blog: blog)
+          PostStream.stream(:blog, with: 'PostStream')
+          stream = PostStream.new(post)
+          expect(stream.blog).to be_kind_of(PostStream)
+          expect(stream.blog.title).to eq('Blog')
+        end
+      end
+
       context 'no stream class exists for the object' do
         it 'returns that object' do
           post = Post.new(title: 'PostMan')

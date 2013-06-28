@@ -40,7 +40,8 @@ module LiquidStream
           new_context = stream_context.merge(method: options[:with] || method_name)
           streams_class.new(method_result, new_context)
         else
-          stream_class_name = Utils.stream_class_name_from(method_name)
+          stream_class_name = Utils.
+            stream_class_name_from(options[:with] || method_name)
 
           if Object.const_defined?(stream_class_name)
             stream_class = stream_class_name.constantize
