@@ -21,11 +21,8 @@ module LiquidStream
 
         if method_result.respond_to?(:each)
           # BuildsStreamClassName
-          streams_class_name = if options.has_key?(:with)
-                                options[:with]
-                              else
-                                Utils.streams_class_name_from(method_name)
-                              end
+          streams_class_name = Utils.
+            streams_class_name_from(options[:with] || method_name)
 
           # FailsIfStreamNotDefined
           unless Object.const_defined?(streams_class_name)
@@ -36,9 +33,7 @@ module LiquidStream
           streams_class = streams_class_name.constantize
 
           # CreatesStreams
-          # NOTE: kinda ugly though that we have to pass the method like this.
-          new_context = stream_context.merge(method: options[:with] || method_name)
-          streams_class.new(method_result, new_context)
+          streams_class.new(method_result, stream_context)
         else
           stream_class_name = Utils.
             stream_class_name_from(options[:with] || method_name)
