@@ -36,16 +36,15 @@ module LiquidStream
           streams_class = streams_class_name.constantize
 
           # CreatesStreams
-          # TODO should pass context
-          streams_class.new(method_result,
-                            method: options[:with] || method_name)
+          # NOTE: kinda ugly though that we have to pass the method like this.
+          new_context = stream_context.merge(method: options[:with] || method_name)
+          streams_class.new(method_result, new_context)
         else
           stream_class_name = Utils.stream_class_name_from(method_name)
 
           if Object.const_defined?(stream_class_name)
             stream_class = stream_class_name.constantize
-            # TODO should pass context
-            stream_class.new(method_result)
+            stream_class.new(method_result, stream_context)
           else
             method_result
           end

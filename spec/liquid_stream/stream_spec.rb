@@ -40,6 +40,15 @@ describe LiquidStream::Stream do
         PostStream.stream(:comments)
         PostStream.instance_methods.should include(:comments)
       end
+
+      it 'should pass in any context' do
+        post = Post.new(title: 'Post')
+        blog = Blog.new(title: 'Blog', posts: [post])
+        controller = double
+        blog_stream = BlogStream.new(blog, controller: controller)
+        posts_stream = blog_stream.posts
+        expect(posts_stream.stream_context).to include(controller: controller)
+      end
     end
 
     context 'streams to a non enumerable' do
@@ -52,6 +61,15 @@ describe LiquidStream::Stream do
           expect(stream.blog).to be_kind_of(BlogStream)
           expect(stream.blog.title).to eq('Blog')
         end
+      end
+
+      it 'should pass in any context' do
+        blog = Blog.new(title: 'Blog')
+        post = Post.new(title: 'Post', blog: blog)
+        controller = double
+        PostStream.stream(:blog)
+        stream = PostStream.new(post, controller: controller)
+        expect(stream.blog.stream_context).to eq(controller: controller)
       end
 
       context 'no stream class exists for the object' do
