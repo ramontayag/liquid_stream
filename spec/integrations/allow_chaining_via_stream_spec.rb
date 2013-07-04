@@ -31,4 +31,23 @@ describe LiquidStream do
     expect(li_els.last.text).to eq('Second')
   end
 
+  it 'should mimic accepting of arguments' do
+    template = <<-WUT
+      {{image["240x330#"]}}
+      {{image["250x350"]}}
+      {{image.colorize["yellow"]}}
+    WUT
+
+    image = double
+    image.stub(:resize).with("240x330#") { "http://image.com/240x330.jpg" }
+    image.stub(:resize).with("250x350") { "http://image.com/250x350.jpg" }
+    image.stub(:colorize).with("yellow") { "http://image.com/yellow_colorized.jpg" }
+
+    image_stream = ImageStream.new(image)
+    result = Liquid::Template.parse(template).render('image' => image_stream)
+    expect(result).to include("http://image.com/240x330.jpg")
+    expect(result).to include("http://image.com/250x350.jpg")
+    expect(result).to include("http://image.com/yellow_colorized.jpg")
+  end
+
 end
