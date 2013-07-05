@@ -9,24 +9,31 @@ module LiquidStream
     end
 
     class_attribute :liquid_streams
-    self.liquid_streams = {}
 
     def self.stream(method_name, options={}, &block)
+      self.liquid_streams ||= {}
       self.liquid_streams[method_name] = {options: options, block: block}
 
       # DefinesStreamMethod
       if block_given?
-        puts "Defining #{method_name} on #{self}"
-        self.send :define_method, method_name do |method_arg|
-          class_name = "Image#{method_name.to_s.classify}Stream"
-          puts "called #{method_name} on #{class_name}"
-          klass = Object.const_set(class_name, Class.new(LiquidStream::Stream))
-          stream = klass.new(source, stream_context)
-          klass.send :define_method, :before_method do |before_method_arg|
-            puts "Executing #{before_method_arg} with #{block} in #{stream}"
-            stream.instance_exec(before_method_arg, &block)
+        if options.has_key?(:matching)
+          self.send :define_method, method_name do |method_arg|
+            instance_exec(method_arg, &block)
           end
-          stream
+        else
+          self.send :define_method, method_name do |*method_args|
+            class_name = "Image#{method_name.to_s.classify}Stream"
+            klass = if Object.const_defined?(class_name)
+                      class_name.constantize
+                    else
+                      Object.const_set(class_name, Class.new(LiquidStream::Stream))
+                    end
+            stream = klass.new(source, stream_context)
+            klass.send :define_method, :before_method do |before_method_arg|
+              stream.instance_exec(before_method_arg, &block)
+            end
+            stream
+          end
         end
       else
         self.send(:define_method, method_name) do |*args|
@@ -64,9 +71,7 @@ module LiquidStream
     end
 
     def before_method(method_name)
-      puts "IN BEFORE METHOD #{method_name}"
       stream_name = matching_stream_names_for(method_name).first
-      puts "This is the stream name: #{stream_name} for #{method_name}"
       if stream_name
         options = self.liquid_streams[stream_name][:options]
         result = send(stream_name, method_name)
@@ -82,26 +87,7 @@ module LiquidStream
             stream_class.new(result, stream_context)
           end
         else
-          puts "Non enum for #{stream_name}"
-          puts "Block is #{self.liquid_streams[stream_name][:block]}"
-          if block = self.liquid_streams[stream_name][:block]
-            puts "BLOCK GIVEN"
-            # define a method that returns a temporary stream that can capture
-            temp_class = <<-EOS
-              class ImageColorizeStream
-                stream :colorize, through: :colorize
-
-                def colorize(color)
-                  source.colorize(color)
-                end
-              end
-            EOS
-            eval(temp_class)
-            stream_instance = ImageColorizeStream.new(source, stream_context)
-            stream_instance.send(:colorize, method_name)
-          else
-            result
-          end
+          result
         end
       end
     end
@@ -111,9 +97,7 @@ module LiquidStream
     def matching_stream_names_for(method_name)
       self.class.liquid_streams.select do |stream_name, data|
         match_regex = data[:options][:matching]
-        if data[:block]
-          (match_regex && method_name =~ match_regex) || match_regex.nil?
-        end
+        (match_regex && method_name =~ match_regex) || match_regex.nil?
       end.keys
     end
 
