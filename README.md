@@ -42,6 +42,58 @@ Create a stream collection that represents a collection of posts:
 
     Liquid::Template.parse("liquid here").render('posts' => posts_stream)
 
+### "Accepting" Arguments
+
+Given:
+
+    class ImageStream < LiquidStream::Stream
+      stream :process, as: :image do |command|
+        source.process command
+      end
+
+      stream :url
+    end
+
+    image = Image.find(2323)
+    image_stream = ImageStream.new(image)
+
+Then, in Liquid:
+
+    {{image_stream.process["200x200"].process["grayscale"].url | image_tag}}
+
+### Stream Context
+
+LiquidStream has a notion of context too. To avoid confusion with Liquid's context, let's call it stream_context. The reason there's a stream context is so that if you have a need to share information within a chained stream, then you need to pass it as a hash. I found this useful when the I needed the streams to know about which controller it was being used:
+
+    class PostsController < ApplicationController
+      def show
+        post = Post.find(params[:id])
+        post_stream = PostStream.new(post, controller: self)
+        Liquid::Template.parse("{{post.blog.children.first.url}}").render('posts' => post_stream)
+      end
+    end
+
+    class PostStream < LiquidStream::Stream
+      include Rails.application.helpers.url_helpers
+
+      def url
+        if controller.request.fullpath =~ /^preview/
+          polymorphic_path :preview, source
+        else
+          polyorphic_path source
+        end
+      end
+
+      private
+
+      def controller
+        stream_context[:controller]
+      end
+
+    end
+
+It's a very specific use-case, but this allows you to render the links to other posts a different way if the person viewing is viewing the post from "/preview/posts/:id" compared to what is rendered when in "/posts/:id". If you find other uses please fork this repo and add it to this readme.
+
 ## Stream is a Liquid::Drop
 
 A stream is a drop - with extra stuff added on to it.
