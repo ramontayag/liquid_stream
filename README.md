@@ -120,3 +120,7 @@ You may not want to expose something that will make it easy for a user to break 
 3. Commit your changes (`git commit -am 'Add some feature'`)
 4. Push to the branch (`git push origin my-new-feature`)
 5. Create new Pull Request
+
+## Thanks
+
+Check out the [awesome contributors](https://github.com/ramontayag/liquid_stream/graphs/contributors).
