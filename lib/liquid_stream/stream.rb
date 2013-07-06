@@ -22,12 +22,8 @@ module LiquidStream
           end
         else
           self.send :define_method, method_name do |*method_args|
-            class_name = "Image#{method_name.to_s.classify}Stream"
-            klass = if Object.const_defined?(class_name)
-                      class_name.constantize
-                    else
-                      Object.const_set(class_name, Class.new(LiquidStream::Stream))
-                    end
+            class_name = generate_stream_class_name method_name
+            klass = find_or_create_stream_class class_name
             stream = klass.new(source, stream_context)
             klass.send :define_method, :before_method do |before_method_arg|
               stream.instance_exec(before_method_arg, &block)
@@ -101,5 +97,20 @@ module LiquidStream
       end.keys
     end
 
+    def find_or_create_stream_class class_name
+      klass = if Object.const_defined?(class_name)
+                class_name.constantize
+              else
+                Object.const_set(class_name, Class.new(LiquidStream::Stream))
+              end
+      klass
+    end
+
+    def generate_stream_class_name method_name
+      new_class_name = self.class.to_s.
+                       gsub("Stream", "#{method_name.to_s.classify}Stream").
+                       strip
+      new_class_name
+    end
   end
 end
