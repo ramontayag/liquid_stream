@@ -65,4 +65,21 @@ describe LiquidStream::Streams do
     end
   end
 
+
+  describe '.stream' do
+    context '`as` option is given' do
+      context 'result is not an enumerable' do
+        it 'should return the object instantiated in the stream class' do
+          image = double
+          Image.stub(:find).with('2') { image }
+          controller = double
+          images_stream = ImagesStream.new(nil, controller: controller)
+          expect(images_stream['2']).to be_kind_of(ImageStream)
+          expect(images_stream['2'].source).to eq(image)
+          expect(images_stream['2'].stream_context).to include(controller: controller)
+        end
+      end
+    end
+  end
+
 end
