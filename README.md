@@ -87,7 +87,7 @@ LiquidStream has a notion of context too. To avoid confusion with Liquid's conte
         if controller.request.fullpath =~ /^preview/
           polymorphic_path :preview, source
         else
-          polyorphic_path source
+          polymorphic_path source
         end
       end
 
