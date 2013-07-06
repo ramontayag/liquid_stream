@@ -70,7 +70,7 @@ Then, in Liquid:
 
 ### Stream Context
 
-LiquidStream has a notion of context too. To avoid confusion with Liquid's context, let's call it stream_context. The reason there's a stream context is so that if you have a need to share information within a chained stream, then you need to pass it as a hash. I found this useful when the I needed the streams to know about which controller it was being used:
+LiquidStream has a notion of context too. To avoid confusion with Liquid's context, let's call it "stream context". The reason there's a stream context is so that if you have a need to share information within a chained stream, then you need to pass it as a hash. I found this useful when the I needed the streams to know about which controller it was being used:
 
     class PostsController < ApplicationController
       def show
@@ -99,7 +99,7 @@ LiquidStream has a notion of context too. To avoid confusion with Liquid's conte
 
     end
 
-It's a very specific use-case, but this allows you to render the links to other posts a different way if the person viewing is viewing the post from "/preview/posts/:id" compared to what is rendered when in "/posts/:id". If you find other uses please fork this repo and add it to this readme.
+It's a very specific use-case, but this allows you to render the links to other posts a different way if the person viewing is viewing the post from `/preview/posts/:id` compared to what is rendered when in `/posts/:id`. If you find other uses please fork this repo and add it to this readme.
 
 ## Stream is a Liquid::Drop
 
@@ -109,7 +109,7 @@ A stream is a drop - with extra stuff added on to it.
 
 You may not want to expose something that will make it easy for a user to break your system. For example, let's say you have 2 million posts, then you won't want to expose all of those posts through a stream:
 
-    posts = Post.scoped # ActiveRecord's scoped returns a lazily executed Arel. If you call #all on this, you'll get 2 million records
+    posts = Post.scoped # ActiveRecord's scoped returns a lazily executed Arel. If you call #all or #to_a on this, you'll get 2 million records
     posts_stream = PostsStream.new(posts)
     posts_stream.to_a # boom!
 
