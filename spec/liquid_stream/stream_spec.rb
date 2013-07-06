@@ -101,6 +101,27 @@ describe LiquidStream::Stream do
         expect(post_stream.comments.first).to be_kind_of(BlogStream)
       end
     end
+
+    context 'through option is given' do
+      context 'matching option is given' do
+        it 'should execute the matching liquid stream' do
+          image = double
+          image.stub(:resize).with('2x2') { 'http://image.com/2x2.jpg'}
+          stream = ImageStream.new(image)
+          expect(stream['2x2']).to eq('http://image.com/2x2.jpg')
+        end
+      end
+
+      context '`prefix` is set to true' do
+        it 'should delegate work, passing any args to the given "through" method' do
+          image = double
+          image.stub(:colorize).with('red') { 'F00' }
+
+          stream = ImageStream.new(image)
+          expect(stream.colorize['red']).to eq('F00')
+        end
+      end
+    end
   end
 
 end
