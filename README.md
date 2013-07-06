@@ -1,10 +1,17 @@
 # LiquidStream
 
-Allows chaining of Liquid objects with a clean DSL, which allows a more Ruby-like way to traverse Liquid objects. For example:
+This library does two things:
+
+1) Allows **chaining** of Liquid objects with a clean DSL, which allows a more Ruby-like way to traverse Liquid objects. For example:
 
     {% for post in posts.published.popular do %}
       {{ post.name }}
     {% endfor %}
+
+2) Mimic accepting of arguments on drops
+
+    {{ image.resize_to["240x240#"].url }}
+    {{ images["23"].url }}
 
 [See why](https://github.com/Shopify/liquid/issues/29).
 
