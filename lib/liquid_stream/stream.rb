@@ -17,19 +17,9 @@ module LiquidStream
       # DefinesStreamMethod
       if block_given?
         if options.has_key?(:matching)
-          self.send :define_method, method_name do |method_arg|
-            instance_exec(method_arg, &block)
-          end
+          self.define_method_with_block method_name, block
         else
-          self.send :define_method, method_name do |*method_args|
-            class_name = generate_stream_class_name method_name
-            klass = find_or_create_stream_class class_name
-            stream = klass.new(source, stream_context)
-            klass.send :define_method, :before_method do |before_method_arg|
-              stream.instance_exec(before_method_arg, &block)
-            end
-            stream
-          end
+          self.delegate_method_with_block_to_new_stream_instance method_name, block
         end
       else
         self.send(:define_method, method_name) do |*args|
@@ -89,6 +79,26 @@ module LiquidStream
     end
 
     private
+
+    def self.define_method_with_block method_name, block
+      self.send :define_method, method_name do |method_arg|
+        self.instance_exec(method_arg, &block)
+      end
+    end
+
+    def self.delegate_method_with_block_to_new_stream_instance method_name, block
+      self.send :define_method, method_name do |*method_args|
+        class_name = generate_stream_class_name method_name
+        stream_klass = find_or_create_stream_class class_name
+
+        stream_instance = stream_klass.new(source, stream_context)
+
+        stream_klass.send :define_method, :before_method do |before_method_arg|
+          stream_instance.instance_exec(before_method_arg, &block)
+        end
+        stream_instance
+      end
+    end
 
     def matching_stream_names_for(method_name)
       self.class.liquid_streams.select do |stream_name, data|
