@@ -82,4 +82,29 @@ describe LiquidStream::Streams do
     end
   end
 
+  describe '.default_source' do
+    it 'should set the default source' do
+      described_class.default_source = ['some', 'items']
+      expect(described_class.new.source).to eq(['some', 'items'])
+    end
+
+    context 'when the default source is a lambda' do
+      it 'should resolve to the what the lambda returns' do
+        described_class.default_source = -> { ['some'] }
+        expect(described_class.new.source).to eq(['some'])
+      end
+    end
+  end
+
+  describe '#source' do
+    context 'when there is no source passed nor default source defined' do
+      it 'should be an empty array' do
+        PostsStream.default_source = nil
+        stream = PostsStream.new
+        expect(stream.source).to eq([])
+      end
+    end
+  end
+
+
 end

@@ -113,6 +113,21 @@ You may not want to expose something that will make it easy for a user to break 
     posts_stream = PostsStream.new(posts)
     posts_stream.to_a # boom!
 
+## Stream/Streams Source
+
+Singular `Stream` and collection `Streams` both use the term source. This is the object that is wrapped by the stream. For collection `Streams`, source acts a little differently. The reason for this is best shown by the following:
+
+    s = PostsStream.new
+    s.source # nil
+
+    PostsStream.default_source = Post.all
+    s = PostsStream.new
+    s.source # Post.all
+    s = PostsStream.new(Post.popular)
+    s.source # Post.popular
+
+As you can see, you may want the source of a collection stream to be different things, or default to something if none is given.
+
 ## Contributing
 
 1. Fork it
