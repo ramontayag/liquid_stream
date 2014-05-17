@@ -18,6 +18,15 @@ describe LiquidStream::Stream do
         expect(posts_stream.last.title).to eq('Post 2')
       end
 
+      it "allows definition of what stream class to use" do
+        post_1 = Post.new(title: 'Post 1')
+        post_2 = Post.new(title: 'Post 2')
+        blog = Blog.new(title: 'Blog', blog_posts: [post_1, post_2])
+        blog_stream = BlogStream.new(blog)
+        posts_stream = blog_stream.blog_posts
+        expect(posts_stream).to be_a(PostsStream)
+      end
+
       context 'no stream class for the enumerable exists' do
         it 'should raise LiquidStream::StreamNotDefined error' do
           PostStream.stream(:comments)
