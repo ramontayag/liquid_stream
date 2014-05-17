@@ -35,6 +35,10 @@ Create a stream that represents one post:
 
     class PostStream < LiquidStream::Stream
       stream :name
+      stream :comments # post_stream.comments will wrap `post.comments` in `CommentsStream`
+
+      # If the name of the stream is different from the stream class name, you can define it:
+      stream :accepted_comments, as: "CommentsStream"
     end
 
 Create a stream collection that represents a collection of posts:
